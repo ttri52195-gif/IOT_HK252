@@ -6,7 +6,6 @@ LiquidCrystal_I2C lcd(0x27,16,2);
 void temp_humi_monitor(void *pvParameters){
 
     Wire.begin(11, 12);
-    Serial.begin(115200);
     dht20.begin();
     lcd.begin();
     lcd.backlight();
@@ -33,7 +32,7 @@ void temp_humi_monitor(void *pvParameters){
         glob_humidity = humidity;
         xSemaphoreGive(xBinarySemaphoreTemp_blinky);
         xSemaphoreGive(xBinarySemaphoreTemp_neo);
-
+        update_history(glob_temperature, glob_humidity);
         // Print the results
         lcd.setCursor(0,0);
         lcd.print("H: ");
