@@ -11,6 +11,12 @@ String wifi_password = "tmt05052005";
 
 
 volatile boolean  isWifiConnected = false;
+volatile bool led_auto_mode = true;
+volatile uint8_t led_manual_r = 0;
+volatile uint8_t led_manual_g = 0;
+volatile uint8_t led_manual_b = 255;
+volatile uint8_t led_brightness = 100;
+volatile bool led_manual_1 = false;
 SemaphoreHandle_t xBinarySemaphoreInternet = xSemaphoreCreateBinary();
 SemaphoreHandle_t xBinarySemaphoreTemp_blinky     = xSemaphoreCreateBinary();
 SemaphoreHandle_t xBinarySemaphoreTemp_neo        = xSemaphoreCreateBinary();

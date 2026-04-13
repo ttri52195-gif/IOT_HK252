@@ -4,8 +4,6 @@
 #include <DNSServer.h>
 #include <Preferences.h>
 
-bool led1_state = false;
-bool led2_state = false;
 bool isAPMode = true;
 
 WebServer server(80);
@@ -73,11 +71,22 @@ bool isApModeRequest()
   return isAPMode;
 }
 
+String getApRootUrl()
+{
+  return "http://" + WiFi.softAPIP().toString() + "/";
+}
+
+void redirectToApRoot()
+{
+  server.sendHeader("Location", getApRootUrl(), true);
+  server.send(302, "text/plain", "");
+}
+
 void handleCaptivePortal()
 {
   if (isApModeRequest())
   {
-    server.send(200, "text/html", mainPage());
+    redirectToApRoot();
   }
   else
   {
@@ -86,10 +95,30 @@ void handleCaptivePortal()
   }
 }
 
+void handleGenerate204()
+{
+  server.send(204, "text/plain", "");
+}
+
+void handleHotspotDetect()
+{
+  server.send(200, "text/html", "<HTML><HEAD><TITLE>Success</TITLE></HEAD><BODY>Success</BODY></HTML>");
+}
+
+void handleConnectTestTxt()
+{
+  server.send(200, "text/plain", "Microsoft Connect Test");
+}
+
+void handleNcsiTxt()
+{
+  server.send(200, "text/plain", "Microsoft NCSI");
+}
+
 String mainPage()
 {
-  String led1 = led1_state ? "ON" : "OFF";
-  String led2 = led2_state ? "ON" : "OFF";
+  // String led1 = led1_state ? "ON" : "OFF";
+  // String led2 = led2_state ? "ON" : "OFF";
 
   return R"rawliteral(
   <!DOCTYPE html>
@@ -174,6 +203,35 @@ String mainPage()
       }
       button:hover { background: #00e0b0; transform: scale(1.05); }
       #settings { background: #f2f3f5; color: #007bff; margin-top: 15px; }
+      .led-mode-card {
+        margin-top: 10px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 15px;
+        padding: 12px;
+      }
+      .led-mode-title {
+        font-weight: 700;
+        margin: 0 0 8px 0;
+      }
+      .led-mode-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      #manualColor {
+        width: 54px;
+        height: 36px;
+        border: none;
+        border-radius: 10px;
+        padding: 0;
+        background: #fff;
+        cursor: pointer;
+      }
+      #manualLabel {
+        font-weight: 600;
+      }
     </style>
   </head>
   <body>
@@ -198,24 +256,27 @@ String mainPage()
       <p id="chartStatus" style="margin:0 0 12px 0;font-weight:600;"></p>
 
       <div>
-        <button onclick='toggleLED(1)'>💡 LED1: <span id="l1">)rawliteral" + led1 + R"rawliteral(</span></button>
-        <button onclick='toggleLED(2)'>💡 LED2: <span id="l2">)rawliteral" + led2 + R"rawliteral(</span></button>
+        <button id="btnLed1" onclick='toggleLED(1)' style="display:none;">💡 LED1: <span id="l1">OFF</span></button>
+      </div>
+
+      <div class="led-mode-card">
+        <p class="led-mode-title">LED mode (Task 1/2/3)</p>
+        <div class="led-mode-row">
+          <button id="btnAuto" onclick="setLedMode('auto')">AUTO</button>
+          <button id="btnManual" onclick="setLedMode('manual')">MANUAL</button>
+        </div>
+        <div class="led-mode-row" style="margin-top:8px;">
+          <span id="manualLabel">Màu LED RGB:</span>
+          <input id="manualColor" type="color" value="#0000ff" onchange="setManualColor(this.value)">
+        </div>
+        <div class="led-mode-row" style="margin-top:8px;">
+          <span id="brightnessLabel">Độ sáng:</span>
+          <input id="brightnessSlider" type="range" min="0" max="100" value="100" onchange="setLedBrightness(this.value)" style="width: 100px;">
+          <span id="brightnessValue">100%</span>
+        </div>
       </div>
 
       <button id="settings" onclick="window.location='/settings'">⚙️ Cài đặt Wi-Fi</button>
-    </div>
-
-    <!-- Modal Notification -->
-    <div id="staModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;">
-      <div style="background:#fff;border-radius:15px;padding:30px;max-width:400px;text-align:center;box-shadow:0 4px 25px rgba(0,0,0,0.3);">
-        <h2 style="color:#4CAF50;margin-top:0;">✓ Kết nối thành công!</h2>
-        <p style="font-size:1.1em;color:#333;margin:15px 0;">Địa chỉ STA IP:</p>
-        <p style="font-size:1.3em;font-weight:bold;color:#1e90ff;margin:10px 0;font-family:monospace;background:#f0f0f0;padding:10px;border-radius:8px;" id="staIpDisplay">---.---.---.---</p>
-        <div style="margin-top:20px;">
-          <button onclick="goToSTA()" style="background:#1e90ff;color:#fff;border:none;padding:12px 20px;border-radius:8px;font-weight:bold;cursor:pointer;margin-right:10px;font-size:1em;">Mở trang STA</button>
-          <button onclick="closeSTAModal()" style="background:#f2f3f5;color:#333;border:none;padding:12px 20px;border-radius:8px;font-weight:bold;cursor:pointer;font-size:1em;">Đóng</button>
-        </div>
-      </div>
     </div>
 
     <script>
@@ -523,71 +584,92 @@ String mainPage()
         });
       }
 
-      // Lấy 10 mẫu lịch sử khi vừa mở trang
-      window.onload = refreshFromHistory;
+      function toHex(v) {
+        const h = Number(v || 0).toString(16).padStart(2, '0');
+        return h.length > 2 ? h.slice(-2) : h;
+      }
 
-      // Nút điều khiển LED
+      function applyLedStatus(status) {
+        const isAuto = status.mode === 'auto';
+        const btnAuto = document.getElementById('btnAuto');
+        const btnManual = document.getElementById('btnManual');
+        const btnLed1 = document.getElementById('btnLed1');
+        const colorInput = document.getElementById('manualColor');
+        const manualLabel = document.getElementById('manualLabel');
+        const brightnessSlider = document.getElementById('brightnessSlider');
+        const brightnessValue = document.getElementById('brightnessValue');
+        const brightnessLabel = document.getElementById('brightnessLabel');
+
+        btnAuto.style.opacity = isAuto ? '1' : '0.65';
+        btnManual.style.opacity = isAuto ? '0.65' : '1';
+        btnLed1.style.display = !isAuto ? 'inline-block' : 'none';
+        btnLed1.disabled = isAuto;
+        btnLed1.style.opacity = isAuto ? '0.65' : '1';
+        colorInput.disabled = isAuto;
+        manualLabel.style.opacity = isAuto ? '0.65' : '1';
+        brightnessSlider.disabled = isAuto;
+        brightnessLabel.style.opacity = isAuto ? '0.65' : '1';
+
+        if (typeof status.led1 === 'string') {
+          document.getElementById('l1').innerText = status.led1;
+        }
+
+        const hex = '#' + toHex(status.r) + toHex(status.g) + toHex(status.b);
+        colorInput.value = hex;
+
+        if (typeof status.brightness !== 'undefined') {
+          brightnessSlider.value = status.brightness;
+          brightnessValue.innerText = status.brightness + '%';
+        }
+      }
+
+      function fetchLedStatus() {
+        fetch('/led-status')
+          .then(r => r.json())
+          .then(applyLedStatus)
+          .catch(() => {});
+      }
+
+      function setLedMode(mode) {
+        fetch('/led-mode?mode=' + encodeURIComponent(mode))
+          .then(r => r.json())
+          .then(applyLedStatus)
+          .catch(() => {});
+      }
+
+      function setManualColor(hex) {
+        const value = (hex || '#000000').replace('#', '');
+        if (value.length !== 6) return;
+
+        const r = parseInt(value.slice(0, 2), 16);
+        const g = parseInt(value.slice(2, 4), 16);
+        const b = parseInt(value.slice(4, 6), 16);
+        fetch('/led-rgb?r=' + r + '&g=' + g + '&b=' + b)
+          .then(r => r.json())
+          .then(applyLedStatus)
+          .catch(() => {});
+      }
+
+      function setLedBrightness(value) {
+        const brightness = parseInt(value) || 100;
+        fetch('/led-brightness?brightness=' + brightness)
+          .then(r => r.json())
+          .then(applyLedStatus)
+          .catch(() => {});
+      }
+
       function toggleLED(id) {
-        fetch('/toggle?led='+id).then(r=>r.json()).then(json=>{
-          document.getElementById('l1').innerText=json.led1;
-          document.getElementById('l2').innerText=json.led2;
+        fetch('/toggle?led=' + id).then(r => r.json()).then(json => {
+          if (typeof json.led1 !== 'undefined') {
+            document.getElementById('l1').innerText = json.led1;
+          }
         });
       }
-      // Modal functions
-      let staConnectCheckTimer = null;
-      let staAlreadyNotified = false;
 
-      function closeSTAModal() {
-        const modal = document.getElementById('staModal');
-        modal.style.display = 'none';
-      }
-
-      function goToSTA() {
-        const staIp = document.getElementById('staIpDisplay').innerText;
-        if (staIp && staIp !== '---.---.---.---') {
-          window.location = 'http://' + staIp;
-        }
-      }
-
-      function checkSTAConnection() {
-        if (staAlreadyNotified) return; // chỉ thông báo 1 lần
-        
-        fetch('/connect-status')
-          .then(r => r.json())
-          .then(status => {
-            if (status.state === 'success' && status.ip && !staAlreadyNotified) {
-              staAlreadyNotified = true;
-              document.getElementById('staIpDisplay').innerText = status.ip;
-              document.getElementById('staModal').style.display = 'flex';
-              stopSTACheck();
-            }
-          })
-          .catch(err => console.warn('Connection check failed:', err));
-      }
-
-      function startSTACheck() {
-        if (staConnectCheckTimer) return;
-        staConnectCheckTimer = setInterval(checkSTAConnection, 2000); // check every 2s
-      }
-
-      function stopSTACheck() {
-        if (staConnectCheckTimer) {
-          clearInterval(staConnectCheckTimer);
-          staConnectCheckTimer = null;
-        }
-      }
-
-      // Tự động bắt đầu check khi trang load
-      window.addEventListener('load', function() {
-        startSTACheck();
-      });
-
-      // Dừng check khi trang sắp unload
-      window.addEventListener('beforeunload', function() {
-        stopSTACheck();
-      });
+      // Lấy dữ liệu khi vừa mở trang
       // Luôn refresh từ mảng lịch sử trên server
       setInterval(refreshFromHistory, 3000);
+      setInterval(fetchLedStatus, 5000);
     </script>
   </body>
   </html>
@@ -693,11 +775,6 @@ String settingsPage()
         background: #ffd54f;
       }
 
-      #msg {
-        margin-top: 10px;
-        font-weight: 500;
-      }
-
       .ssid-row {
         display: flex;
         gap: 8px;
@@ -738,11 +815,9 @@ String settingsPage()
         <button type="button" id="back" onclick="window.location='/dashboard'">Quay lại</button>
         <button type="button" id="gotoSta">Mở trang STA</button>
       </form>
-      <div id="msg"></div>
     </div>
 
     <script>
-      const msgEl = document.getElementById('msg');
       const gotoStaBtn = document.getElementById('gotoSta');
       const connectBtn = document.getElementById('btnConnect');
       const ssidSelect = document.getElementById('ssid');
@@ -760,7 +835,6 @@ String settingsPage()
       function scheduleAutoRedirect(ip) {
         clearRedirectTimer();
         let secondsLeft = 3;
-        msgEl.innerText = 'Ket noi thanh cong! STA IP: ' + ip + ' | Tu dong mo sau ' + secondsLeft + 's...';
 
         redirectTimer = setInterval(() => {
           secondsLeft -= 1;
@@ -769,7 +843,6 @@ String settingsPage()
             window.location = 'http://' + ip;
             return;
           }
-          msgEl.innerText = 'Ket noi thanh cong! STA IP: ' + ip + ' | Tu dong mo sau ' + secondsLeft + 's...';
         }, 1000);
       }
 
@@ -840,16 +913,14 @@ String settingsPage()
                 stopStatusPolling();
               } else if (s.state === 'failed') {
                 clearRedirectTimer();
-                msgEl.innerText = 'Ket noi that bai. Vui long kiem tra lai SSID/mat khau.';
                 gotoStaBtn.style.display = 'none';
                 connectBtn.disabled = false;
                 stopStatusPolling();
-              } else if (s.state === 'connecting') {
-                msgEl.innerText = 'Dang ket noi Wi-Fi...';
               }
             })
             .catch(() => {
-              msgEl.innerText = 'Khong lay duoc trang thai ket noi.';
+              connectBtn.disabled = false;
+              stopStatusPolling();
             });
         }, 1000);
       }
@@ -860,14 +931,12 @@ String settingsPage()
         let pass = document.getElementById('pass').value;
 
         if (!ssid) {
-          msgEl.innerText = 'Vui lòng chọn một mạng Wi-Fi từ danh sách.';
           return;
         }
 
         connectBtn.disabled = true;
         gotoStaBtn.style.display = 'none';
         clearRedirectTimer();
-        msgEl.innerText = 'Dang gui thong tin Wi-Fi...';
 
         fetch('/connect?ssid='+encodeURIComponent(ssid)+'&pass='+encodeURIComponent(pass))
           .then(r=>r.text())
@@ -875,7 +944,6 @@ String settingsPage()
             startStatusPolling();
           })
           .catch(() => {
-            msgEl.innerText = 'Gui thong tin ket noi that bai.';
             connectBtn.disabled = false;
           });
       };
@@ -899,19 +967,18 @@ void handleDashboard() { server.send(200, "text/html", mainPage()); }
 void handleToggle()
 {
   int led = server.arg("led").toInt();
+
+  // Single LED is user-controlled only in manual mode.
+  led_auto_mode = false;
+
   if (led == 1)
   {
-    led1_state = !led1_state;
-    Serial.println("YOUR CODE TO CONTROL LED1");
+    led_manual_1 = !led_manual_1;
+    digitalWrite(LED1_PIN, led_manual_1 ? HIGH : LOW);
   }
-  else if (led == 2)
-  {
-    led2_state = !led2_state;
-    Serial.println("YOUR CODE TO CONTROL LED2");
-  }
+
   server.send(200, "application/json",
-              "{\"led1\":\"" + String(led1_state ? "ON" : "OFF") +
-                  "\",\"led2\":\"" + String(led2_state ? "ON" : "OFF") + "\"}");
+              "{\"led1\":\"" + String(led_manual_1 ? "ON" : "OFF") + "\"}");
 }
 
 void handleSensors()
@@ -961,6 +1028,54 @@ void handleHistory() {
   server.send(200, "application/json", json);
 }
 
+void handleLedStatus()
+{
+  String mode = led_auto_mode ? "auto" : "manual";
+  String json = "{\"mode\":\"" + mode + "\",\"r\":" + String((int)led_manual_r) + ",\"g\":" + String((int)led_manual_g) + ",\"b\":" + String((int)led_manual_b) + ",\"brightness\":" + String((int)led_brightness) + ",\"led1\":\"" + String(led_manual_1 ? "ON" : "OFF") + "\"}";
+  server.send(200, "application/json", json);
+}
+
+void handleLedBrightness()
+{
+  int brightness = server.arg("brightness").toInt();
+  brightness = constrain(brightness, 0, 100);
+  led_brightness = (uint8_t)brightness;
+  handleLedStatus();
+}
+
+void handleLedMode()
+{
+  String mode = server.arg("mode");
+  mode.toLowerCase();
+  if (mode == "auto")
+  {
+    led_auto_mode = true;
+  }
+  else if (mode == "manual")
+  {
+    led_auto_mode = false;
+  }
+
+  handleLedStatus();
+}
+
+void handleLedRgb()
+{
+  int r = server.arg("r").toInt();
+  int g = server.arg("g").toInt();
+  int b = server.arg("b").toInt();
+
+  r = constrain(r, 0, 255);
+  g = constrain(g, 0, 255);
+  b = constrain(b, 0, 255);
+
+  led_manual_r = (uint8_t)r;
+  led_manual_g = (uint8_t)g;
+  led_manual_b = (uint8_t)b;
+  led_auto_mode = false;
+  handleLedStatus();
+}
+
 void handleScanNetworks()
 {
   int networkCount = WiFi.scanNetworks(false, true);
@@ -998,15 +1113,22 @@ void setupServer()
   server.on("/sensors", HTTP_GET, handleSensors);
   server.on("/settings", HTTP_GET, handleSettings); 
   server.on("/history", HTTP_GET, handleHistory);
+  server.on("/led-status", HTTP_GET, handleLedStatus);
+  server.on("/led-mode", HTTP_GET, handleLedMode);
+  server.on("/led-rgb", HTTP_GET, handleLedRgb);
+  server.on("/led-brightness", HTTP_GET, handleLedBrightness);
   server.on("/scan-networks", HTTP_GET, handleScanNetworks);
   server.on("/connect-status", HTTP_GET, handleConnectStatus);
   Serial.println("Web server handlers set up.");
   server.on("/connect", HTTP_GET, handleConnect);
   Serial.println("Web server handlers set up.");
-  server.on("/generate_204", HTTP_GET, handleCaptivePortal);
-  server.on("/hotspot-detect.html", HTTP_GET, handleCaptivePortal);
-  server.on("/ncsi.txt", HTTP_GET, handleCaptivePortal);
-  server.on("/fwlink", HTTP_GET, handleCaptivePortal);
+  server.on("/generate_204", HTTP_GET, handleGenerate204);
+  server.on("/success.txt", HTTP_GET, handleGenerate204);
+  server.on("/hotspot-detect.html", HTTP_GET, handleHotspotDetect);
+  server.on("/connecttest.txt", HTTP_GET, handleConnectTestTxt);
+  server.on("/ncsi.txt", HTTP_GET, handleNcsiTxt);
+  server.on("/fwlink", HTTP_GET, redirectToApRoot);
+  server.on("/redirect", HTTP_GET, redirectToApRoot);
   server.onNotFound(handleCaptivePortal);
   server.begin();
 }
@@ -1046,6 +1168,8 @@ void connectToWiFi()
 void main_server_task(void *pvParameters)
 {
   pinMode(BOOT_PIN, INPUT_PULLUP);
+  pinMode(LED1_PIN, OUTPUT);
+  digitalWrite(LED1_PIN, LOW);
   Serial.println("Starting main server task...");
   startAP();
   setupServer();
