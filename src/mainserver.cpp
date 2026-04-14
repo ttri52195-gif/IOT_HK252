@@ -796,6 +796,24 @@ String settingsPage()
         font-size: 0.9em;
         white-space: nowrap;
       }
+
+      #connectStatus {
+        margin: 14px 0 0;
+        font-weight: 700;
+        min-height: 1.4em;
+      }
+
+      #connectStatus.connecting {
+        color: #fff3cd;
+      }
+
+      #connectStatus.success {
+        color: #d4edda;
+      }
+
+      #connectStatus.failed {
+        color: #ffd1d1;
+      }
     </style>
   </head>
 
@@ -814,6 +832,7 @@ String settingsPage()
         <button type="submit" id="btnConnect">Kết nối</button>
         <button type="button" id="back" onclick="window.location='/dashboard'">Quay lại</button>
         <button type="button" id="gotoSta">Mở trang STA</button>
+        <p id="connectStatus"></p>
       </form>
     </div>
 
@@ -822,28 +841,25 @@ String settingsPage()
       const connectBtn = document.getElementById('btnConnect');
       const ssidSelect = document.getElementById('ssid');
       const scanBtn = document.getElementById('scanBtn');
+      const connectStatus = document.getElementById('connectStatus');
       let statusTimer = null;
       let redirectTimer = null;
 
+      function setConnectStatus(text, state) {
+        connectStatus.textContent = text || '';
+        connectStatus.className = state || '';
+      }
+
       function clearRedirectTimer() {
         if (redirectTimer) {
-          clearInterval(redirectTimer);
+          clearTimeout(redirectTimer);
           redirectTimer = null;
         }
       }
 
       function scheduleAutoRedirect(ip) {
         clearRedirectTimer();
-        let secondsLeft = 3;
-
-        redirectTimer = setInterval(() => {
-          secondsLeft -= 1;
-          if (secondsLeft <= 0) {
-            clearRedirectTimer();
-            window.location = 'http://' + ip;
-            return;
-          }
-        }, 1000);
+        setConnectStatus('Kết nối thành công. AP vẫn đang mở. STA IP: ' + ip, 'success');
       }
 
       function setSsidOptions(networks) {
@@ -898,6 +914,7 @@ String settingsPage()
 
       function startStatusPolling() {
         stopStatusPolling();
+        setConnectStatus('Đang kết nối Wi-Fi đã chọn...', 'connecting');
         statusTimer = setInterval(() => {
           fetch('/connect-status')
             .then(r => r.json())
@@ -908,18 +925,20 @@ String settingsPage()
                   clearRedirectTimer();
                   window.location = 'http://' + s.ip;
                 };
-                scheduleAutoRedirect(s.ip);
                 connectBtn.disabled = false;
+                scheduleAutoRedirect(s.ip);
                 stopStatusPolling();
               } else if (s.state === 'failed') {
                 clearRedirectTimer();
                 gotoStaBtn.style.display = 'none';
                 connectBtn.disabled = false;
+                setConnectStatus('Kết nối thất bại. AP vẫn được giữ để bạn chọn lại Wi-Fi.', 'failed');
                 stopStatusPolling();
               }
             })
             .catch(() => {
               connectBtn.disabled = false;
+              setConnectStatus('Không đọc được trạng thái kết nối. Vui lòng thử lại.', 'failed');
               stopStatusPolling();
             });
         }, 1000);
@@ -937,6 +956,7 @@ String settingsPage()
         connectBtn.disabled = true;
         gotoStaBtn.style.display = 'none';
         clearRedirectTimer();
+        setConnectStatus('Đã gửi yêu cầu kết nối...', 'connecting');
 
         fetch('/connect?ssid='+encodeURIComponent(ssid)+'&pass='+encodeURIComponent(pass))
           .then(r=>r.text())
@@ -945,6 +965,7 @@ String settingsPage()
           })
           .catch(() => {
             connectBtn.disabled = false;
+            setConnectStatus('Không gửi được yêu cầu kết nối.', 'failed');
           });
       };
 
@@ -1227,11 +1248,9 @@ void main_server_task(void *pvParameters)
 
         xSemaphoreGive(xBinarySemaphoreInternet);
 
-        // Only switch out of AP after STA is confirmed connected.
-        dnsServer.stop();
-        WiFi.softAPdisconnect(true);
-        WiFi.mode(WIFI_STA);
-        isAPMode = false;
+        // Keep AP active so the user can stay on the setup page.
+        WiFi.mode(WIFI_AP_STA);
+        isAPMode = true;
         connecting = false;
       }
       else if (millis() - connect_start_ms > 10000)
