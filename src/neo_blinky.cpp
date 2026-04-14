@@ -10,6 +10,21 @@ void neo_blinky(void *pvParameters){
     uint32_t currentColor = strip.Color(0,0,0);
     while(1) {
 
+            if (!led_auto_mode) {
+                // Apply brightness to manual color
+                uint8_t r = (led_manual_r * led_brightness) / 100;
+                uint8_t g = (led_manual_g * led_brightness) / 100;
+                uint8_t b = (led_manual_b * led_brightness) / 100;
+                uint32_t manualColor = strip.Color(r, g, b);
+                if (manualColor != currentColor) {
+                    currentColor = manualColor;
+                    strip.setPixelColor(0, currentColor);
+                    strip.show();
+                }
+                vTaskDelay(pdMS_TO_TICKS(150));
+                continue;
+            }
+
         // chỉ update khi có data mới
       if(xSemaphoreTake(xBinarySemaphoreTemp_blinky,0)){
 
