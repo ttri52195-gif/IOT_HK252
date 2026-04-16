@@ -23,15 +23,17 @@ void temp_humi_monitor(void *pvParameters){
         // Check if any reads failed and exit early
         if (isnan(temperature) || isnan(humidity)) {
             Serial.println("Failed to read from DHT sensor!");
-            temperature = humidity =  -1;
-            //return;
+            // Do NOT update globals on error; keep previous valid values
+            vTaskDelay(1000);
+            continue;
         }
 
-        //Update global variables for temperature and humidity
+        //Update global variables for temperature and humidity only if valid
         glob_temperature = temperature;
         glob_humidity = humidity;
         xSemaphoreGive(xBinarySemaphoreTemp_blinky);
         xSemaphoreGive(xBinarySemaphoreTemp_neo);
+        xSemaphoreGive(xBinarySemaphoreTinyMLData);
         update_history(glob_temperature, glob_humidity);
         // Print the results
         lcd.setCursor(0,0);

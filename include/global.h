@@ -30,5 +30,6 @@ extern volatile bool led_manual_1;
 extern SemaphoreHandle_t xBinarySemaphoreInternet;
 extern SemaphoreHandle_t xBinarySemaphoreTemp_blinky;
 extern SemaphoreHandle_t xBinarySemaphoreTemp_neo;
+extern SemaphoreHandle_t xBinarySemaphoreTinyMLData;
 
 #endif
