@@ -20,6 +20,7 @@ volatile bool led_manual_1 = false;
 SemaphoreHandle_t xBinarySemaphoreInternet = xSemaphoreCreateBinary();
 SemaphoreHandle_t xBinarySemaphoreTemp_blinky     = xSemaphoreCreateBinary();
 SemaphoreHandle_t xBinarySemaphoreTemp_neo        = xSemaphoreCreateBinary();
+SemaphoreHandle_t xBinarySemaphoreTinyMLData      = xSemaphoreCreateBinary();
 
 
 float temp_history[10] = {0,0,0,0,0,0,0,0,0,0};
