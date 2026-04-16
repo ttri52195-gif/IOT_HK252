@@ -200,6 +200,13 @@ void tiny_ml_task(void *pvParameters)
         runNaiveBayes(temperature, humidity);
         const int predicted_label = argmax(class_probs, NB_NUM_CLASSES);
 
+        tinyml_predicted_label = predicted_label;
+        tinyml_confidence = class_probs[predicted_label];
+        tinyml_last_temp = temperature;
+        tinyml_last_humi = humidity;
+        tinyml_last_update_ms = millis();
+        tinyml_has_prediction = true;
+
         // Output: sensor input and predicted label
         Serial.print("T=");
         Serial.print(temperature, 2);

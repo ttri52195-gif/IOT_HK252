@@ -26,6 +26,13 @@ extern volatile uint8_t led_manual_b;
 extern volatile uint8_t led_brightness;
 extern volatile bool led_manual_1;
 
+extern volatile bool tinyml_has_prediction;
+extern volatile int tinyml_predicted_label;
+extern volatile float tinyml_confidence;
+extern volatile float tinyml_last_temp;
+extern volatile float tinyml_last_humi;
+extern volatile unsigned long tinyml_last_update_ms;
+
 
 extern SemaphoreHandle_t xBinarySemaphoreInternet;
 extern SemaphoreHandle_t xBinarySemaphoreTemp_blinky;

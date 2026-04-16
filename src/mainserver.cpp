@@ -209,6 +209,221 @@ String mainPage()
         border-radius: 15px;
         padding: 12px;
       }
+      .tinyml-card {
+        margin-top: 10px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 15px;
+        padding: 12px;
+        text-align: left;
+        border: 2px solid rgba(255, 255, 255, 0.95);
+        transition: border-color 0.25s ease, opacity 0.25s ease, transform 0.2s ease;
+      }
+      .tinyml-inner {
+        background: rgba(255, 255, 255, 0.96);
+        border-radius: 12px;
+        padding: 10px 12px;
+        box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.08);
+        transition: background 0.25s ease, transform 0.2s ease;
+      }
+      .tinyml-card.stale {
+        opacity: 0.72;
+        filter: saturate(0.78);
+      }
+      .tinyml-card.flash .tinyml-inner {
+        animation: tinymlPulse 0.22s ease;
+      }
+      @keyframes tinymlPulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.012); }
+        100% { transform: scale(1); }
+      }
+      .tinyml-card.state-unknown {
+        border-color: rgba(255, 255, 255, 0.95);
+      }
+      .tinyml-card.state-unknown .tinyml-inner {
+        background: rgba(255, 255, 255, 0.96);
+      }
+      .tinyml-card.state-label-0 {
+        border-color: rgba(255, 255, 255, 0.95);
+      }
+      .tinyml-card.state-label-0 .tinyml-inner {
+        background: rgba(254, 226, 226, 0.92);
+      }
+      .tinyml-card.state-label-1 {
+        border-color: rgba(255, 255, 255, 0.95);
+      }
+      .tinyml-card.state-label-1 .tinyml-inner {
+        background: rgba(219, 234, 254, 0.92);
+      }
+      .tinyml-card.state-label-2 {
+        border-color: rgba(255, 255, 255, 0.95);
+      }
+      .tinyml-card.state-label-2 .tinyml-inner {
+        background: rgba(209, 250, 229, 0.9);
+      }
+      .tinyml-card.state-label-3 {
+        border-color: rgba(255, 255, 255, 0.95);
+      }
+      .tinyml-card.state-label-3 .tinyml-inner {
+        background: rgba(255, 237, 213, 0.9);
+      }
+      .tinyml-card.state-label-4 {
+        border-color: rgba(255, 255, 255, 0.95);
+      }
+      .tinyml-card.state-label-4 .tinyml-inner {
+        background: rgba(220, 252, 231, 0.9);
+      }
+      .tinyml-sections {
+        display: grid;
+        gap: 8px;
+      }
+      .tinyml-section {
+        padding-top: 6px;
+      }
+      .tinyml-section + .tinyml-section {
+        border-top: 1px dashed rgba(15, 23, 42, 0.12);
+      }
+      .tinyml-title {
+        margin: 0 0 8px 0;
+        font-weight: 700;
+        color: #0f172a;
+      }
+      .tinyml-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 6px;
+      }
+      .tinyml-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.85em;
+        font-weight: 700;
+        color: #0b2239;
+        background: rgba(255, 255, 255, 0.85);
+        border-radius: 999px;
+        padding: 4px 10px;
+      }
+      .tinyml-badge.waiting {
+        color: #334155;
+        background: rgba(241, 245, 249, 0.95);
+      }
+      .tinyml-badge.stale {
+        color: #7f1d1d;
+        background: rgba(254, 226, 226, 0.95);
+      }
+      .tinyml-badge.label-0 {
+        color: #7f1d1d;
+        background: rgba(254, 226, 226, 0.95);
+      }
+      .tinyml-badge.label-1 {
+        color: #0f3a7a;
+        background: rgba(219, 234, 254, 0.95);
+      }
+      .tinyml-badge.label-2 {
+        color: #0b4a3a;
+        background: rgba(209, 250, 229, 0.95);
+      }
+      .tinyml-badge.label-3 {
+        color: #7c2d12;
+        background: rgba(255, 237, 213, 0.95);
+      }
+      .tinyml-badge.label-4 {
+        color: #14532d;
+        background: rgba(220, 252, 231, 0.95);
+      }
+      .tinyml-icon {
+        font-size: 1.1em;
+        line-height: 1;
+      }
+      .tinyml-line {
+        margin: 4px 0;
+        font-size: 0.98em;
+        color: #111827;
+      }
+      .tinyml-value {
+        font-weight: 700;
+        color: #0b1220;
+      }
+      .tinyml-conf-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .tinyml-certainty {
+        font-size: 0.82em;
+        font-weight: 700;
+        color: #0f172a;
+        background: rgba(255, 255, 255, 0.66);
+        border-radius: 999px;
+        padding: 3px 9px;
+        white-space: nowrap;
+      }
+      .tinyml-meter {
+        position: relative;
+        width: 100%;
+        height: 10px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.12);
+        overflow: hidden;
+        box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.08);
+      }
+      .tinyml-meter-fill {
+        width: 0%;
+        height: 100%;
+        border-radius: inherit;
+        transition: width 0.25s ease, background 0.25s ease;
+        background: linear-gradient(90deg, #64748b, #94a3b8);
+      }
+      .tinyml-card.state-label-0 .tinyml-meter-fill {
+        background: linear-gradient(90deg, #ef4444, #dc2626);
+      }
+      .tinyml-card.state-label-1 .tinyml-meter-fill {
+        background: linear-gradient(90deg, #3b82f6, #2563eb);
+      }
+      .tinyml-card.state-label-2 .tinyml-meter-fill {
+        background: linear-gradient(90deg, #14b8a6, #0f766e);
+      }
+      .tinyml-card.state-label-3 .tinyml-meter-fill {
+        background: linear-gradient(90deg, #fb923c, #ea580c);
+      }
+      .tinyml-card.state-label-4 .tinyml-meter-fill {
+        background: linear-gradient(90deg, #22c55e, #16a34a);
+      }
+      .tinyml-meta {
+        margin: 6px 0 0 0;
+        font-size: 0.84em;
+        font-weight: 600;
+        color: #334155;
+      }
+      .tinyml-placeholder {
+        display: none;
+        margin-top: 8px;
+      }
+      .tinyml-placeholder.show {
+        display: block;
+      }
+      .tinyml-skeleton {
+        height: 11px;
+        border-radius: 8px;
+        margin: 8px 0;
+        background: linear-gradient(100deg, rgba(203, 213, 225, 0.35) 20%, rgba(241, 245, 249, 0.9) 50%, rgba(203, 213, 225, 0.35) 80%);
+        background-size: 220% 100%;
+        animation: shimmer 1.25s linear infinite;
+      }
+      .tinyml-skeleton.s1 { width: 64%; }
+      .tinyml-skeleton.s2 { width: 92%; }
+      .tinyml-skeleton.s3 { width: 78%; }
+      @keyframes shimmer {
+        from { background-position: 200% 0; }
+        to { background-position: -20% 0; }
+      }
+      .is-hidden {
+        display: none;
+      }
       .led-mode-title {
         font-weight: 700;
         margin: 0 0 8px 0;
@@ -273,6 +488,38 @@ String mainPage()
           <span id="brightnessLabel">Độ sáng:</span>
           <input id="brightnessSlider" type="range" min="0" max="100" value="100" onchange="setLedBrightness(this.value)" style="width: 100px;">
           <span id="brightnessValue">100%</span>
+        </div>
+      </div>
+
+      <div id="tinymlCard" class="tinyml-card state-unknown">
+        <div class="tinyml-inner">
+          <div class="tinyml-header">
+            <p class="tinyml-title">TinyML đề xuất</p>
+            <span id="mlBadge" class="tinyml-badge waiting"><span id="mlIcon" class="tinyml-icon">🤖</span><span id="mlBadgeText">Đang chờ</span></span>
+          </div>
+          <div id="mlContent" class="tinyml-sections is-hidden">
+            <div class="tinyml-section">
+              <p class="tinyml-line">Dự đoán: <span id="mlLabel" class="tinyml-value">--</span></p>
+            </div>
+            <div class="tinyml-section">
+              <div class="tinyml-conf-row">
+                <p class="tinyml-line">Độ tin cậy: <span id="mlConfidence" class="tinyml-value">--</span></p>
+                <span id="mlCertainty" class="tinyml-certainty">--</span>
+              </div>
+              <div class="tinyml-meter" role="progressbar" aria-label="TinyML confidence">
+                <div id="mlConfidenceFill" class="tinyml-meter-fill"></div>
+              </div>
+            </div>
+            <div class="tinyml-section">
+              <p class="tinyml-line">Khuyến nghị: <span id="mlSuggestion" class="tinyml-value">--</span></p>
+              <p class="tinyml-meta">Cập nhật: <span id="mlUpdatedAgo">--</span></p>
+            </div>
+          </div>
+          <div id="mlPlaceholder" class="tinyml-placeholder show" aria-hidden="true">
+            <div class="tinyml-skeleton s1"></div>
+            <div class="tinyml-skeleton s2"></div>
+            <div class="tinyml-skeleton s3"></div>
+          </div>
         </div>
       </div>
 
@@ -630,6 +877,118 @@ String mainPage()
           .catch(() => {});
       }
 
+      function applyTinyMlStatus(status) {
+        const card = document.getElementById('tinymlCard');
+        const badge = document.getElementById('mlBadge');
+        const icon = document.getElementById('mlIcon');
+        const badgeText = document.getElementById('mlBadgeText');
+        const label = document.getElementById('mlLabel');
+        const confidence = document.getElementById('mlConfidence');
+        const certainty = document.getElementById('mlCertainty');
+        const confidenceFill = document.getElementById('mlConfidenceFill');
+        const suggestion = document.getElementById('mlSuggestion');
+        const updatedAgo = document.getElementById('mlUpdatedAgo');
+        const content = document.getElementById('mlContent');
+        const placeholder = document.getElementById('mlPlaceholder');
+
+        function toCertaintyText(conf) {
+          if (conf >= 0.8) return 'Cao';
+          if (conf >= 0.55) return 'Trung bình';
+          return 'Thấp';
+        }
+
+        function toAgeText(ageMs) {
+          const ageSec = Math.max(0, Math.floor(ageMs / 1000));
+          if (ageSec <= 1) return 'vừa xong';
+          if (ageSec < 60) return ageSec + ' giây trước';
+          const minutes = Math.floor(ageSec / 60);
+          if (minutes < 60) return minutes + ' phút trước';
+          const hours = Math.floor(minutes / 60);
+          return hours + ' giờ trước';
+        }
+
+        function showWaiting() {
+          card.className = 'tinyml-card state-unknown';
+          card.classList.remove('stale');
+          card.classList.remove('flash');
+          badge.className = 'tinyml-badge waiting';
+          icon.innerText = '🤖';
+          badgeText.innerText = 'Đang chờ';
+          label.innerText = 'Đang chờ dữ liệu...';
+          confidence.innerText = '--';
+          certainty.innerText = '--';
+          confidenceFill.style.width = '0%';
+          suggestion.innerText = '--';
+          updatedAgo.innerText = '--';
+          content.classList.add('is-hidden');
+          placeholder.classList.add('show');
+        }
+
+        if (!status || !status.has_prediction) {
+          showWaiting();
+          return;
+        }
+
+        content.classList.remove('is-hidden');
+        placeholder.classList.remove('show');
+
+        const labelIndex = Number(status.label_index);
+        const validLabel = [0, 1, 2, 3, 4].includes(labelIndex);
+        const iconMap = {
+          0: '⚠️',
+          1: '❄️',
+          2: '💨',
+          3: '🔥',
+          4: '✅'
+        };
+
+        if (validLabel) {
+          card.className = 'tinyml-card state-label-' + labelIndex;
+        } else {
+          card.className = 'tinyml-card state-unknown';
+        }
+
+        const confidenceValue = Math.max(0, Math.min(1, Number(status.confidence) || 0));
+        const confidencePct = confidenceValue * 100;
+        const ageMs = Math.max(0, Number(status.age_ms) || 0);
+        const isStale = ageMs > 10000;
+
+        if (isStale) {
+          card.classList.add('stale');
+          badge.className = 'tinyml-badge stale';
+          icon.innerText = '📡';
+          badgeText.innerText = 'Mất tín hiệu';
+        } else {
+          badge.className = validLabel ? ('tinyml-badge label-' + labelIndex) : 'tinyml-badge';
+          icon.innerText = iconMap[labelIndex] || '🤖';
+          badgeText.innerText = validLabel ? ('Nhãn ' + labelIndex) : 'Không xác định';
+        }
+
+        const previousLabel = card.dataset.prevLabel ? Number(card.dataset.prevLabel) : NaN;
+        if (validLabel && !Number.isNaN(previousLabel) && previousLabel !== labelIndex) {
+          card.classList.remove('flash');
+          void card.offsetWidth;
+          card.classList.add('flash');
+        }
+        card.dataset.prevLabel = String(labelIndex);
+
+        label.innerText = status.label || 'Không xác định';
+        confidence.innerText = confidencePct.toFixed(1) + '%';
+        certainty.innerText = toCertaintyText(confidenceValue);
+        confidenceFill.style.width = confidencePct.toFixed(1) + '%';
+        suggestion.innerText = status.suggestion || 'Giữ nguyên trạng thái';
+        updatedAgo.innerText = toAgeText(ageMs);
+      }
+
+      function fetchTinyMlStatus() {
+        fetch('/tinyml-status')
+          .then(r => r.json())
+          .then(applyTinyMlStatus)
+          .catch(() => {
+            applyTinyMlStatus(null);
+          });
+      }
+
       function setLedMode(mode) {
         fetch('/led-mode?mode=' + encodeURIComponent(mode))
           .then(r => r.json())
@@ -670,6 +1029,10 @@ String mainPage()
       // Luôn refresh từ mảng lịch sử trên server
       setInterval(refreshFromHistory, 3000);
       setInterval(fetchLedStatus, 5000);
+      setInterval(fetchTinyMlStatus, 3000);
+      refreshFromHistory();
+      fetchLedStatus();
+      fetchTinyMlStatus();
     </script>
   </body>
   </html>
@@ -1033,6 +1396,71 @@ void handleConnectStatus()
   server.send(200, "application/json", json);
 }
 
+String tinyMlLabelText(int label)
+{
+  switch (label)
+  {
+  case 0:
+    return "Không hợp lệ";
+  case 1:
+    return "Bật điều hòa";
+  case 2:
+    return "Bật máy hút ẩm";
+  case 3:
+    return "Bật máy sưởi";
+  case 4:
+    return "Chế độ bình thường";
+  default:
+    return "Không xác định";
+  }
+}
+
+String tinyMlSuggestionText(int label)
+{
+  switch (label)
+  {
+  case 1:
+    return "Nên bật điều hòa để hạ nhiệt và ổn định môi trường.";
+  case 2:
+    return "Nên bật máy hút ẩm để giảm độ ẩm cao.";
+  case 3:
+    return "Nên bật máy sưởi để tăng nhiệt độ.";
+  case 4:
+    return "Điều kiện ổn định, có thể giữ chế độ hiện tại.";
+  case 0:
+    return "Dữ liệu bất thường, hãy kiểm tra cảm biến.";
+  default:
+    return "Chưa có khuyến nghị.";
+  }
+}
+
+void handleTinyMlStatus()
+{
+  if (!tinyml_has_prediction)
+  {
+    server.send(200, "application/json", "{\"has_prediction\":false}");
+    return;
+  }
+
+  const int label = tinyml_predicted_label;
+  const String labelText = tinyMlLabelText(label);
+  const String suggestionText = tinyMlSuggestionText(label);
+  const unsigned long nowMs = millis();
+  const unsigned long ageMs = (nowMs >= tinyml_last_update_ms) ? (nowMs - tinyml_last_update_ms) : 0;
+
+  String json = "{\"has_prediction\":true";
+  json += ",\"label_index\":" + String(label);
+  json += ",\"label\":\"" + escapeJsonString(labelText) + "\"";
+  json += ",\"confidence\":" + String(tinyml_confidence, 4);
+  json += ",\"temperature\":" + String(tinyml_last_temp, 2);
+  json += ",\"humidity\":" + String(tinyml_last_humi, 2);
+  json += ",\"last_update_ms\":" + String(tinyml_last_update_ms);
+  json += ",\"age_ms\":" + String(ageMs);
+  json += ",\"suggestion\":\"" + escapeJsonString(suggestionText) + "\"}";
+
+  server.send(200, "application/json", json);
+}
+
 void handleHistory() {
   String json = "{\"temp\":[";
   for (int i = 0; i < 10; i++) {
@@ -1138,6 +1566,7 @@ void setupServer()
   server.on("/led-mode", HTTP_GET, handleLedMode);
   server.on("/led-rgb", HTTP_GET, handleLedRgb);
   server.on("/led-brightness", HTTP_GET, handleLedBrightness);
+  server.on("/tinyml-status", HTTP_GET, handleTinyMlStatus);
   server.on("/scan-networks", HTTP_GET, handleScanNetworks);
   server.on("/connect-status", HTTP_GET, handleConnectStatus);
   Serial.println("Web server handlers set up.");
