@@ -1661,6 +1661,8 @@ void main_server_task(void *pvParameters)
           startAP();
           setupServer();
         }
+        Serial.print("AP IP Address: ");
+        Serial.println(WiFi.softAPIP());
       }
     }
 
