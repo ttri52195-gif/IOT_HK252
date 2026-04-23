@@ -8,7 +8,7 @@
 
 extern float glob_temperature;
 extern float glob_humidity;
-
+extern float glob_temp_threshold;
 extern float temp_history[10];
 extern float humi_history[10];
 void update_history(float t, float h);
