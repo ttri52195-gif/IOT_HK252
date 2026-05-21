@@ -19,4 +19,17 @@ __pycache__/
 .pytest_cache/
 
 # ML workspace (excluded from submission)
-ml/
+# ML workspace - keep source, ignore large data and model binaries
+# Keep code and small text files; ignore large models and datasets
+ml/__pycache__/
+ml/*.joblib
+ml/*.tflite
+ml/*.h5
+ml/*.ckpt
+ml/*.hdf5
+ml/*.log
+ml/output/
+
+# If you prefer to store large model files in the repo, consider Git LFS:
+#   git lfs install
+#   git lfs track "ml/*.tflite" "ml/*.joblib" "ml/*.h5"

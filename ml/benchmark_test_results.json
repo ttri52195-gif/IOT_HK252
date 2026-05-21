@@ -1,0 +1,44 @@
+{
+  "results": [
+    {
+      "model_name": "MLP (TFLite INT8)",
+      "train_accuracy": 0.545271635055542,
+      "test_accuracy": 0.5645161271095276,
+      "artifact_size_bytes": 3928,
+      "avg_inference_ms": 0.583742187700409,
+      "note": "validation_accuracy=0.5686; train_loss=1.2695; test_loss=1.2434"
+    },
+    {
+      "model_name": "Random Forest",
+      "train_accuracy": 1.0,
+      "test_accuracy": 0.9946236559139785,
+      "artifact_size_bytes": 190769,
+      "avg_inference_ms": 0.19296718755867914,
+      "note": "trees=30; max_depth=unlimited; feature_importance=[0.4059835750105935, 0.5940164249894064]"
+    },
+    {
+      "model_name": "Naive Bayes",
+      "train_accuracy": 0.9463447350771295,
+      "test_accuracy": 0.946236559139785,
+      "artifact_size_bytes": 1023,
+      "avg_inference_ms": 0.0009296877578890417,
+      "note": "GaussianNB"
+    },
+    {
+      "model_name": "SVM (RBF)",
+      "train_accuracy": 0.9879275653923542,
+      "test_accuracy": 0.9838709677419355,
+      "artifact_size_bytes": 25087,
+      "avg_inference_ms": 0.021726562408730388,
+      "note": "C=10.0; support_vectors=276"
+    }
+  ],
+  "best_model": {
+    "model_name": "Random Forest",
+    "train_accuracy": 1.0,
+    "test_accuracy": 0.9946236559139785,
+    "artifact_size_bytes": 190769,
+    "avg_inference_ms": 0.19296718755867914,
+    "note": "trees=30; max_depth=unlimited; feature_importance=[0.4059835750105935, 0.5940164249894064]"
+  }
+}
