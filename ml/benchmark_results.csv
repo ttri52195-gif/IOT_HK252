@@ -1,0 +1,5 @@
+model_name,train_accuracy,test_accuracy,artifact_size_bytes,avg_inference_ms,note
+MLP (TFLite INT8),0.986264,0.986007,3928,0.529961,validation_accuracy=0.9869; train_loss=0.0568; test_loss=0.0583
+Random Forest,1.000000,0.999500,1241905,0.264005,"trees=200; max_depth=unlimited; feature_importance=[0.5437151069395709, 0.4562848930604291]"
+Naive Bayes,0.921953,0.933033,1023,0.000963,GaussianNB
+SVM (RBF),0.991009,0.992504,64399,0.026283,C=10.0; support_vectors=744

@@ -1,0 +1,96 @@
+{
+  "timestamp": "2026-04-23 15:26:41",
+  "models": [
+    {
+      "model_name": "Gaussian Naive Bayes",
+      "train_accuracy": 0.9220681903334582,
+      "test_accuracy": 0.9210789210789211,
+      "precision_weighted": 0.9217171333682295,
+      "recall_weighted": 0.9210789210789211,
+      "f1_weighted": 0.9207804450151513,
+      "training_time_ms": 2.49349998193793,
+      "prediction_time_ms": 1.4890000165905803,
+      "cv_mean_score": 0.9219445399683874,
+      "cv_std_score": 0.006363617418024785,
+      "model_size_kb": 0.791015625,
+      "esp32_score": 96.76635913871965,
+      "roc_auc": 0.9907148480134671,
+      "note": ""
+    },
+    {
+      "model_name": "Random Forest",
+      "train_accuracy": 1.0,
+      "test_accuracy": 0.999000999000999,
+      "precision_weighted": 0.9990052410434576,
+      "recall_weighted": 0.999000999000999,
+      "f1_weighted": 0.9989944935786328,
+      "training_time_ms": 173.3261999906972,
+      "prediction_time_ms": 72.38869997672737,
+      "cv_mean_score": 0.9995003902835384,
+      "cv_std_score": 0.00046739422381032584,
+      "model_size_kb": 567.62890625,
+      "esp32_score": 78.60008086008207,
+      "roc_auc": 0.9983835090066007,
+      "note": "Feature importance: temperature: 0.542, humidity: 0.458"
+    },
+    {
+      "model_name": "SVM (RBF kernel)",
+      "train_accuracy": 0.9838890970400899,
+      "test_accuracy": 0.9825174825174825,
+      "precision_weighted": 0.9826866926380416,
+      "recall_weighted": 0.9825174825174825,
+      "f1_weighted": 0.9823400698745183,
+      "training_time_ms": 600.9877000178676,
+      "prediction_time_ms": 496.8279999739025,
+      "cv_mean_score": 0.9812668580264676,
+      "cv_std_score": 0.0022301858326282844,
+      "model_size_kb": 75.5927734375,
+      "esp32_score": 67.072216796875,
+      "roc_auc": 0.9997444340843027,
+      "note": ""
+    },
+    {
+      "model_name": "MLP (Shared from benchmark)",
+      "train_accuracy": 0.9855126764081429,
+      "test_accuracy": 0.986013986013986,
+      "precision_weighted": 0.9861516397810774,
+      "recall_weighted": 0.986013986013986,
+      "f1_weighted": 0.9859963467114992,
+      "training_time_ms": 12173.894500010647,
+      "prediction_time_ms": 314.11440001102164,
+      "cv_mean_score": 0.9860140085220337,
+      "cv_std_score": 0.0,
+      "model_size_kb": 3.8359375,
+      "esp32_score": 80.39773000814537,
+      "roc_auc": 0.9998057846960036,
+      "note": ""
+    }
+  ],
+  "summary": {
+    "total_models_evaluated": 4,
+    "best_model_accuracy": {
+      "name": "Random Forest",
+      "test_accuracy": 0.999000999000999,
+      "f1_score": 0.9989944935786328
+    },
+    "best_model_f1_score": {
+      "name": "Random Forest",
+      "f1_score": 0.9989944935786328,
+      "test_accuracy": 0.999000999000999
+    },
+    "fastest_model": {
+      "name": "Gaussian Naive Bayes",
+      "training_time_ms": 2.49349998193793
+    },
+    "best_for_esp32": {
+      "name": "Gaussian Naive Bayes",
+      "esp32_score": 96.76635913871965,
+      "test_accuracy": 0.9210789210789211,
+      "model_size_kb": 0.791015625,
+      "prediction_time_ms": 1.4890000165905803
+    },
+    "average_test_accuracy": 0.9721528471528471,
+    "average_f1_score": 0.9720278387949504,
+    "average_model_size_kb": 161.962158203125
+  }
+}
