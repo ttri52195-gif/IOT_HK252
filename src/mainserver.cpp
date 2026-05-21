@@ -12,7 +12,7 @@ Preferences wifiPrefs;
 
 unsigned long connect_start_ms = 0;
 bool connecting = false;
-String connect_state = "idle"; // idle | connecting | success | failed
+String connect_state = "idle";
 String last_sta_ip = "";
 
 static const byte DNS_PORT = 53;
@@ -1666,7 +1666,6 @@ void main_server_task(void *pvParameters)
       }
     }
 
-    // STA Mode
     if (connecting)
     {
       if (WiFi.status() == WL_CONNECTED)
